@@ -1,0 +1,36 @@
+git clone https://github.com/PX4/Firmware.git
+
+sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+
+sudo apt update
+
+sudo apt install screen
+
+sudo apt-get install gcc-arm-embedded
+
+sudo apt-get install android-tools-adb -y
+
+sudo apt-get install libc6-armel-cross libc6-dev-armel-cross binutils-arm-linux-gnueabi libncurses5-dev
+
+sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf 
+
+wget https://raw.githubusercontent.com/PX4/Devguide/master/build_scripts/ubuntu_sim_nuttx.sh
+
+source ubuntu_sim_nuttx.sh
+
+cd Firmware
+
+git tag -l
+
+git checkout v1.8.2
+
+git log -1 --oneline
+
+git submodule sync --recursive
+git submodule update --init --recursive
+
+# make posix_bebop_default
+make parrot_bebop
+
+screen /dev/ttyUSB0 115200
+

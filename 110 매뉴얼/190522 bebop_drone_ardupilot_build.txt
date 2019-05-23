@@ -1,0 +1,33 @@
+# update bebop drone kernel as ardupilot
+
+# install
+    wget https://raw.githubusercontent.com/Parrot-Developers/toolchains/master/parrot-tools-linuxgnutools-2016.02-linaro_1.0.0-2_amd64.deb
+
+    sudo dpkg -i parrot-tools-linuxgnutools-2016.02-linaro_1.0.0-2_amd64.deb
+
+    sudo apt install android-tools-adb
+
+    sudo pip install future
+
+    # setting
+    # Add the path to the toolchain to the PATH variable
+    # ~/.bashrc edit
+    export PATH=/opt/arm-2016.02-linaro/bin:$PATH
+
+    source ~/.bashrc
+
+git clone https://github.com/ArduPilot/ardupilot.git
+cd ardupilot
+git submodule update --init --recursive
+./waf configure --board=bebop
+./waf build
+
+# Connect to the Bebop2’s WiFi network (BebopDrone-XXXX). 
+# Enable adb server by pressing the power button 4 times. 
+
+adb connect 192.168.42.1:9050 
+
+adb shell mount -o remount,rw / 
+
+adb mkdir /data/ftp/internal_000/APM
+adb push build/bebop/bin/arducopter /data/ftp/internal_000/APM/
