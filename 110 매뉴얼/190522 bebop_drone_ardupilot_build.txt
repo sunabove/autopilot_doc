@@ -1,11 +1,15 @@
 # update bebop drone kernel as ardupilot
 
+# http://ardupilot.org/dev/docs/building-for-bebop-2.html#building-for-bebop-2
+
 # install
     wget https://raw.githubusercontent.com/Parrot-Developers/toolchains/master/parrot-tools-linuxgnutools-2016.02-linaro_1.0.0-2_amd64.deb
 
     sudo dpkg -i parrot-tools-linuxgnutools-2016.02-linaro_1.0.0-2_amd64.deb
 
     sudo apt install android-tools-adb
+
+    sudo apt install python-pip
 
     sudo pip install future
 
@@ -18,6 +22,7 @@
 
 git clone https://github.com/ArduPilot/ardupilot.git
 cd ardupilot
+git pull
 git submodule update --init --recursive
 ./waf configure --board=bebop
 ./waf build
@@ -30,4 +35,41 @@ adb connect 192.168.42.1:9050
 adb shell mount -o remount,rw / 
 
 adb mkdir /data/ftp/internal_000/APM
+
+# 위의 명령어는 실패함.
+# 대신 아래의 명령어로 대체함
+    telnt 192.168.42.1
+    kk
+    mkdir /data/ftp/internal_000/APM
+    exit
+
 adb push build/bebop/bin/arducopter /data/ftp/internal_000/APM/
+
+adb shell sync
+
+telnet 192.168.42.1
+    kk
+    mount -o remount,rw /
+    mv /data/ftp/internal_000/APM/arducopter /usr/sbin
+    cp /etc/init.d/rcS_mode_default /etc/init.d/rcS_mode_default_backup
+    vi /etc/init.d/rcS_mode_default
+        # 파일 내용
+        #!/bin/sh
+
+        # default rcS running mode script
+
+        ulogger -t "rcS_mode_default" -p I "Launching Dragon"
+        echo $((1024*1024)) > /proc/sys/net/core/wmem_max	# inscrease the max socket size
+        #DragonStarter.sh -out2null &
+        arducopter -A udp:192.168.42.255:14550:bcast -B /dev/ttyPA1 -C udp:192.168.42.255:14551:bcast -l /data/ftp/internal_000/APM/logs -t /data/ftp/internal_000/APM/terrain &
+
+        sleep 1
+        # -- 파일 내용 끝.
+    
+    sync
+    sync
+    reboot
+
+    
+
+

@@ -4,15 +4,14 @@ sudo apt upgrade -y
 
 sudo reboot
 
+sudo apt install adb
 sudo apt install git -y
 sudo apt install cmake -y
 sudo apt install screen
 
 git clone https://github.com/PX4/Firmware.git
 
-//sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
-
-
+//sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa 
 sudo apt install python-jinja2 python-pip python-empy -y
 
 sudo pip install future numpy toml catkin_pkg pyyaml
@@ -35,12 +34,11 @@ sudo apt install android-tools-adb -y
 
 git tag -l
 
-git checkout v1.8.2
-
-git checkout v1.9.0-rc1
+git checkout v1.8.2 
 
 git log -1 --oneline
 
+git pull
 git submodule sync --recursive
 git submodule update --init --recursive
 
@@ -54,4 +52,14 @@ make parrot_bebop upload
 
 telnet 192.168.42.1
     $ kk
-    
+
+    $ mount -o remount,rw /
+    $ ls -l /data/ftp/internal_000/px4
+    $ cp -r /data/ftp/internal_000/px4 /update
+    $ vi /etc/init.d/rcS_mode_default
+    # enables the fan 
+    echo 1 > /sys/class/gpio/gpio85/value
+    # run px4 kernel
+    /update/px4/px4 -d -s /home/root/px4.config > /home/root/px4.log &
+    #/update/px4/px4 -s /home/root/px4.config /data/ftp/internal_000/px4/
+    #/update/px4 -s /home/root/px4.config /data/ftp/internal_000/px4/ > /dev/null 
