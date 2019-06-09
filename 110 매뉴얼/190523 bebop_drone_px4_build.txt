@@ -46,6 +46,9 @@ git checkout v1.8.2
 git log -1 --oneline
 
 git pull
+
+git pull origin v1.8.2
+
 git submodule sync --recursive
 git submodule update --init --recursive
 
@@ -55,6 +58,8 @@ make px4fmu-v2_default
 
 make list_config_targets | more
 make list_config_targets | grep bebop
+
+ make posix_bebop_default
 
 make parrot_bebop
 
